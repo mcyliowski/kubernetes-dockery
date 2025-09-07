@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>MongoDB Docker Demo</title>
+</head>
+<body>
+  <h1>Lista elementów</h1>
+  <ul id="items"></ul>
+  <input type="text" id="itemInput" placeholder="Dodaj element">
+  <button onclick="addItem()">Dodaj</button>
+
+  <script>
+    const API = 'http://localhost:3000/items'; 
+
+    async function loadItems() {
+      const res = await fetch(API);
+      const items = await res.json();
+      document.getElementById('items').innerHTML = items.map(i => `<li>${i.name}</li>`).join('');
+    }
+
+    async function addItem() {
+      const name = document.getElementById('itemInput').value;
+      if (!name) return alert('Wpisz coś!');
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      document.getElementById('itemInput').value = '';
+      loadItems();
+    }
+
+    loadItems();
+  </script>
+</body>
+</html>
