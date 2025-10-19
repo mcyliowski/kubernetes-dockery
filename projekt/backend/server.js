@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = 3000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://admin:nimda@mongo:27017/testdb?authSource=admin";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://admin:nimda@mongodb:27017/testdb?authSource=admin";
 
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

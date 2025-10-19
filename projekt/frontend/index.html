@@ -2,16 +2,74 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>MongoDB Docker Demo</title>
+  <title>KIEDY POE</title>
+  <style>
+    body {
+      background-image: url('tlo.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: Arial, sans-serif;
+      color: #ffffff;          /* domyślny kolor tekstu */
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    h1 {
+      color: #ffd700;          /* złoty nagłówek */
+      text-shadow: 2px 2px 4px #000; /* lekki cień dla lepszej czytelności */
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      color: #000;                     /* tekst wpisywany */
+      background-color: rgba(255,255,255,0.8); /* jasne półprzezroczyste tło */
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      color: #fff;                     /* tekst na przycisku */
+      background-color: rgba(0,0,0,0.6); /* półprzezroczyste ciemne tło */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: rgba(0,0,0,0.8); /* ciemniejszy przy hover */
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: rgba(0,0,0,0.5); /* półprzezroczyste tło dla listy */
+      color: #fff;                 /* biały tekst */
+      margin: 5px auto;
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 5px #000; /* lekki cień dla czytelności */
+    }
+  </style>
 </head>
 <body>
-  <h1>Lista elementów</h1>
+  <h1>LISTA BUILDÓW W POE</h1>
   <ul id="items"></ul>
-  <input type="text" id="itemInput" placeholder="Dodaj element">
+  <input type="text" id="itemInput" placeholder="ZAPYTAJ MNIE O POE">
   <button onclick="addItem()">Dodaj</button>
 
   <script>
-    const API = 'http://localhost:3000/items'; 
+    const API = 'http://app.test.wbd.actor/items'; 
 
     async function loadItems() {
       const res = await fetch(API);
