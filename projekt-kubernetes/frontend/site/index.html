@@ -11,7 +11,8 @@
   <button onclick="addItem()">Dodaj</button>
 
   <script>
-    const API = 'http://localhost:3000/items'; 
+    // Wszystkie żądania idą przez Apache reverse proxy
+    const API = '/items'; 
 
     async function loadItems() {
       const res = await fetch(API);
