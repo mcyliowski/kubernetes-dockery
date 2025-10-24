@@ -8,7 +8,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /home/docker/volume
+    path: /home/cyna/volume
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

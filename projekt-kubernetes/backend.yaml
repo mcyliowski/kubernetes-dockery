@@ -5,7 +5,7 @@ metadata:
   labels:
     app: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
       - name: backend-k8s
-        image: cyna58/nauka_kubernetes:backend-k8s
+        image: cyna58/nauka-kubernetes:back_v1
         ports:
-        - containerPort: 3000
+        - containerPort: 3001
         resources:
           requests:
             memory: "256Mi"
@@ -41,18 +41,20 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: mongo-config
-              key: mongo-url
+              key: mongo-url       
+        - name: CONTENT_API_URL
+          value: "http://backend:3001"  
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: backend
 spec:
   selector:
     app: backend
-  type: NodePort  
+  type: ClusterIP  
   ports:
     - protocol: TCP
-      port: 10000
-      targetPort: 3000
-      nodePort: 30007
+      port: 3001
+      targetPort: 3001
+  
