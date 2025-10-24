@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-gui
+  labels:
+    app: mongo-gui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-gui
+  template:
+    metadata:
+      labels:
+        app: mongo-gui
+    spec:
+      containers:
+      - name: mongo-gui
+        image: cyna58/nauka_kubernetes:mongoexpress
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        ports:
+        - containerPort: 8081
+        env:
+        - name: MONGO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-gui-user
+        - name: ME_CONFIG_MONGODB_ADMIPASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-secret
+              key: mongo-gui-pass   
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-gui
+spec:
+  selector:
+    app: mongo-gui
+  type: NodePort
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8081
+    targetPort: 8081
+    nodePort: 30200
