@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>KIEDY POE - Wheel of Choice</title>
+  <style>
+    body {
+      background-image: url('tlo.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: Arial, sans-serif;
+      color: #ffffff;
+      text-align: center;
+      padding-top: 50px;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #ffd700;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input {
+      color: #000;
+      background-color: rgba(255,255,255,0.8);
+    }
+
+    button {
+      color: #fff;
+      background-color: rgba(0,0,0,0.6);
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      margin: 5px auto;
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 5px #000;
+    }
+
+    #result {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px #000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Lewa sekcja -->
+  <div>
+    <h1>LISTA BUILDÓW W POE</h1>
+    <ul id="items"></ul>
+    <input type="text" id="itemInput" placeholder="ZAPYTAJ MNIE O POE">
+    <button onclick="addItem()">Dodaj</button>
+  </div>
+
+  <!-- Prawa sekcja -->
+  <div>
+    <h1>Wheel of Choice</h1>
+    <canvas id="wheelCanvas" width="300" height="300" style="border: 2px solid #fff; border-radius: 50%;"></canvas>
+    <button onclick="spinWheel()">Zakręć</button>
+    <button onclick="resetItems()">RESET</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const API = '/items'; 
+
+    let items = [];
+    let angle = 0;
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+
+    async function loadItems() {
+      const res = await fetch(API);
+      items = await res.json();
+      document.getElementById('items').innerHTML = items.map(i => `<li>${i.name}</li>`).join('');
+      drawWheel();
+    }
+
+    async function addItem() {
+      const name = document.getElementById('itemInput').value;
+      if (!name) return alert('Wpisz coś!');
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      document.getElementById('itemInput').value = '';
+      loadItems();
+    }
+
+    async function resetItems() {
+      if (!confirm("Czy chcesz usunąć wszystkie wpisy?")) return;
+      await fetch(API, { method: 'DELETE' });
+      loadItems();
+    }
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!items.length) return;
+      const slice = 2 * Math.PI / items.length;
+      items.forEach((item, i) => {
+        ctx.beginPath();
+        ctx.moveTo(150, 150);
+        ctx.fillStyle = `hsl(${i * (360 / items.length)}, 70%, 60%)`;
+        ctx.arc(150, 150, 150, slice * i, slice * (i + 1));
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(slice * i + slice / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(item.name, 140, 10);
+        ctx.restore();
+      });
+    }
+
+    function spinWheel() {
+      if (!items.length) return alert("Brak elementów!");
+      const spin = Math.random() * 360 + 720;
+      let current = 0;
+      const interval = setInterval(() => {
+        angle += 10;
+        current += 10;
+
+        ctx.clearRect(0, 0, 300, 300);
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(angle * Math.PI / 180);
+        ctx.translate(-150, -150);
+        drawWheel();
+        ctx.restore();
+
+        if (current >= spin) {
+          clearInterval(interval);
+          const slice = 360 / items.length;
+          const selectedIndex = Math.floor(((360 - (angle % 360)) % 360) / slice);
+          document.getElementById('result').innerText = `Wylosowano: ${items[selectedIndex].name}`;
+        }
+      }, 20);
+    }
+
+    loadItems();
+  </script>
+</body>
+</html>
