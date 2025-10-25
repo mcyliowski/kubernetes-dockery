@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend-k8s
-        image: cyna58/nauka-kubernetes:frontend-poe_v1
+        image: cyna58/nauka-kubernetes:reset_v1
         imagePullPolicy: IfNotPresent
         resources:
           requests:
