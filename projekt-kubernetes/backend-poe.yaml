@@ -43,7 +43,10 @@ spec:
               name: mongo-config
               key: mongo-url       
         - name: CONTENT_API_URL
-          value: "http://backend:3001"  
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              value: contentApiUrl 
 ---
 apiVersion: v1
 kind: Service
