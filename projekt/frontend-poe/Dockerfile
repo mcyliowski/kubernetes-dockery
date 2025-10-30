@@ -23,7 +23,7 @@ COPY config/vhost.conf /etc/apache2/sites-available/my-site.conf
 COPY site/index.html /var/www/html/index.html.template
 COPY site/tlo.jpg /var/www/html/tlo.jpg
 
-ENV CONTENT_API_URL=http://backend:3001
+ENV CONTENT_API_URL=http://localhost:3001
 RUN envsubst '$CONTENT_API_URL' < /var/www/html/index.html.template > /var/www/html/index.html
 
 RUN a2ensite my-site.conf && a2dissite 000-default.conf
