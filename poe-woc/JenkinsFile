@@ -17,15 +17,34 @@ spec:
         }
     }
 
+    environment {
+        K8S_NAMESPACE = "devops-tools"
+        MANIFESTS_PATH = "." // katalog z Twoimi manifestami
+    }
+
     stages {
-        stage('Deploy') {
+        stage('Checkout manifests') {
             steps {
-                withKubeConfig(credentialsId: '7f6382e2-5f63-4dcb-a821-5c4afe2a14ec') {
-                    sh 'kubectl version --client'
-                    sh "kubectl apply -f . --namespace devops-tools"
+                git branch: 'main', url: 'https://github.com/mcyliowski/helm_charts.git'
+            }
+        }
+
+        stage('Deploy manifests') {
+            steps {
+                kubeconfig(
+                    caCertificate: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJRGNtMFg1aXp0QjR3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRFeE1qa3lNak00TWpSYUZ3MHpOVEV4TWpjeU1qUXpNalJhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURYakdsbWExSGxMTkVHU3BDRXUwVXloN3IyN09WWWRhQXovdUV3NTh4T0JuWjhRd1Z4R1hNT1FRVWkKMFRtTllzUGIrVTh6OWZ0WHB6b0JyblcrUk9TcmxqcVAzU0MvbXpiRmQvV0oxVzF2ZTFRVm1hNUdPV3BhdFpkagpOa3F2TWNsRnZiMjAvSkEra1hPbndxNEUwQlJGelJLS3ZHUnpScDFxVktFNzBkaXhKZzJHdllSTjZ5Umo3NXROCi9IVjlxZ0VVNFM0cER4K214Yk5xZlRhRWE0eForNlJEZVZVMU9GUGhHeFZrS0VzZlJZTjRSVCtlQlppeS96ZHIKcnZhU1FkV0w2NEJacTlvRTMxQ2o1Vld3T3JnT2E0K0xWZ1I5bk1GVHFKMjlEUHBUUVRuL2ZPaTNyOVdTRGphMgpZcmRHQldmYzFTYTlDNkc5dmpLSUN5SXpLUnpYQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTMC80N25ZeG1oWUI1UXlNUlNtaVZBdklySTh6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQytLVFhBb2xVUQpibUxFV0tLSllFM21GdTFjY0FNN0oxUEkxS2o3UEppR045RmZOV0laT21lTmYrNHRqRXNPcGppN251Rm5hTjBiCjJ2YVNNNnZlMmw3QXdHUmpveFQwR2ZqZTlRZU5JMUJZaU5UbENzd01NN1dOajlpMUNSMnBlbjNNZE85Z0ttZmkKQ296bUdURUtBS0lrWXR5SWlKUG1QOVJsMStJUU90SVZWaUZxYUVRTkNWQkFVN0FScXhucDE0NXZVL1d3L2dCdgpHREx6ZnBTTDF4RUN4M2dVeDVRMHM4WmlMekJTUENHQW1tUmhOUmQzeHdOelJiTFVGaTN4SFV5R0xKRE1jcVB6CmxKUnRuOUY1dng3L2QvOVVYQnAxQjlQUzZyV011aW9sUmdES2RwYk9wQk1zd1Z3alhTYnZXUWpXUjR0R0VOd0oKaU9kV1RrQk5oL1lQCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K',
+                    credentialsId: 'kubeconfig',
+                    serverUrl: 'https://ansible1:6443'
+                ) {
+                    sh """
+                        echo "kubectl version:"
+                        kubectl version --client
+
+                        echo "Applying manifests..."
+                        kubectl apply -f $MANIFESTS_PATH --namespace $K8S_NAMESPACE
+                    """
                 }
             }
         }
     }
 }
-
