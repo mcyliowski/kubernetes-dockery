@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout manifests') {
             steps {
-                git branch: 'main', url: 'https://github.com/mcyliowski/helm_charts.git'
+                git branch: 'main', url: 'https://github.com/mcyliowski/kubernetes-dockery.git'
             }
         }
 
