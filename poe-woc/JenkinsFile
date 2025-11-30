@@ -15,7 +15,8 @@ pipeline {
 
         stage('Deploy with Kubernetes CLI Plugin') {
             steps {
-                kubernetesCli(credentialId: '7f6382e2-5f63-4dcb-a821-5c4afe2a14ec') {
+                // Używamy withKubeConfig zamiast nieistniejącego kubernetesCli
+                withKubeConfig(credentialsId: '7f6382e2-5f63-4dcb-a821-5c4afe2a14ec') {
                     sh """
                         echo "kubectl version:"
                         kubectl version --client
