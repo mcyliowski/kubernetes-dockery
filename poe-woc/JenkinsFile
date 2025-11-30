@@ -1,0 +1,28 @@
+pipeline {
+    agent any  // używa istniejącego poda Jenkinsa
+
+    environment {
+        K8S_NAMESPACE = "devops-tools"
+        MANIFESTS_PATH = "."  // folder z manifestami Kubernetes
+    }
+
+    stages {
+        stage('Checkout manifests') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mcyliowski/helm_charts.git'
+            }
+        }
+
+        stage('Deploy with kubectl') {
+            steps {
+                sh """
+                echo "kubectl version:"
+                kubectl version --client
+
+                echo "Applying manifests..."
+                kubectl apply -f \$MANIFESTS_PATH --namespace \$K8S_NAMESPACE
+                """
+            }
+        }
+    }
+}
