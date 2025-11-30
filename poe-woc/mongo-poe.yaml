@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: mongo
+  labels:
+    app: mongo
 spec:
-  serviceName: "mongo"
   replicas: 1
   selector:
     matchLabels:
@@ -24,19 +25,7 @@ spec:
             cpu: "250m"
           limits:
             memory: "1Gi"
-            cpu: "500m"
-        volumeMounts:
-        - name: mongo-storage
-          mountPath: /data/db
-  volumeClaimTemplates:
-  - metadata:
-      name: mongo-storage
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: "1Gi"
+            cpu: "500m"     
 ---
 apiVersion: v1
 kind: Service
@@ -45,8 +34,9 @@ metadata:
 spec:
   selector:
     app: mongo
-  type: ClusterIP
+  type: ClusterIP  
   ports:
-  - protocol: TCP
-    port: 27017
-    targetPort: 27017
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+            
