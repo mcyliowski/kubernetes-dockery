@@ -1,9 +1,9 @@
 pipeline {
-    agent any  // używa istniejącego poda Jenkinsa
+    agent any
 
     environment {
         K8S_NAMESPACE = "devops-tools"
-        MANIFESTS_PATH = "."  // folder z manifestami Kubernetes
+        MANIFESTS_PATH = "."
     }
 
     stages {
@@ -13,15 +13,17 @@ pipeline {
             }
         }
 
-        stage('Deploy with kubectl') {
+        stage('Deploy with Kubernetes CLI Plugin') {
             steps {
-                sh """
-                echo "kubectl version:"
-                kubectl version --client
+                kubernetesCli(credentialId: '7f6382e2-5f63-4dcb-a821-5c4afe2a14ec') {
+                    sh """
+                        echo "kubectl version:"
+                        kubectl version --client
 
-                echo "Applying manifests..."
-                kubectl apply -f \$MANIFESTS_PATH --namespace \$K8S_NAMESPACE
-                """
+                        echo "Applying manifests..."
+                        kubectl apply -f $MANIFESTS_PATH --namespace $K8S_NAMESPACE
+                    """
+                }
             }
         }
     }
