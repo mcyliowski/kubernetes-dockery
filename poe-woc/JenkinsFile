@@ -6,6 +6,10 @@ pipeline {
         MANIFESTS_PATH = "./poe-woc"
     }
 
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
     stages {
         stage('Checkout manifests') {
             steps {
