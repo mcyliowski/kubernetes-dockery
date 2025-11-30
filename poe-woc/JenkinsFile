@@ -1,31 +1,31 @@
 pipeline {
-    agent any
-
-    environment {
-        K8S_NAMESPACE = "devops-tools"
-        MANIFESTS_PATH = "."
+    agent {
+        kubernetes {
+            label 'kubectl-agent'
+            defaultContainer 'kubectl'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: kubectl
+      image: bitnami/kubectl:latest
+      command:
+        - cat
+      tty: true
+"""
+        }
     }
 
     stages {
-        stage('Checkout manifests') {
+        stage('Deploy') {
             steps {
-                git branch: 'main', url: 'https://github.com/mcyliowski/helm_charts.git'
-            }
-        }
-
-        stage('Deploy with Kubernetes CLI Plugin') {
-            steps {
-                // Używamy withKubeConfig zamiast nieistniejącego kubernetesCli
                 withKubeConfig(credentialsId: '7f6382e2-5f63-4dcb-a821-5c4afe2a14ec') {
-                    sh """
-                        echo "kubectl version:"
-                        kubectl version --client
-
-                        echo "Applying manifests..."
-                        kubectl apply -f $MANIFESTS_PATH --namespace $K8S_NAMESPACE
-                    """
+                    sh 'kubectl version --client'
+                    sh "kubectl apply -f . --namespace devops-tools"
                 }
             }
         }
     }
 }
+
