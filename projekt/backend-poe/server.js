@@ -26,7 +26,7 @@ app.post('/items', async (req, res) => {
   res.json(newItem);
 });
 
-// NOWY ENDPOINT – USUWANIE WSZYSTKICH
+
 app.delete('/items', async (req, res) => {
   try {
     await Item.deleteMany({});
